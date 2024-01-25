@@ -59,6 +59,13 @@ var routes = Routes{
 	},
 
 	{
+		"SelfInfoGet",
+		http.MethodGet,
+		"/v1/infos",
+		SelfInfoGet,
+	},
+
+	{
 		"AbsencesGet",
 		http.MethodGet,
 		"/v1/absences",

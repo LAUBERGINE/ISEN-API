@@ -33,6 +33,27 @@ func AgendaGet(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// NotationsGet - Returns self user info
+func SelfInfoGet(c *gin.Context) {
+	token := c.GetHeader("Token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing token header"})
+		return
+	}
+
+	if token == "FAKETOKEN" {
+		c.JSON(http.StatusOK, fakeNotes)
+		return
+	}
+
+	notation, err := isen.GetSelfInfo(aurion.Token(token))
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, notation)
+}
+
 // NotationsGet - Returns a list of all user's notes
 func NotationsGet(c *gin.Context) {
 	token := c.GetHeader("Token")
