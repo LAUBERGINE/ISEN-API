@@ -73,10 +73,10 @@ var routes = Routes{
 	},
 
 	{
-		"AgendaGet",
+		"CalendarGet",
 		http.MethodGet,
-		"/v1/agenda",
-		AgendaGet,
+		"/v1/calendar",
+		CalendarGet,
 	},
 
 	{

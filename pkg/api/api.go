@@ -29,8 +29,24 @@ func AbsencesGet(c *gin.Context) {
 }
 
 // AgendaGet -
-func AgendaGet(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+func CalendarGet(c *gin.Context) {
+	token := c.GetHeader("Token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing token header"})
+		return
+	}
+
+	if token == "FAKETOKEN" {
+		c.JSON(http.StatusOK, gin.H{"error": fakeCalendar})
+		return
+	}
+
+	calendar, err := isen.GetCalendar(aurion.Token(token))
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+	c.Data(http.StatusOK, "application/octet-stream", calendar)
 }
 
 // NotationsGet - Returns self user info

@@ -44,3 +44,5 @@ var fakeInfos = isen.SelfInfo{
 	Firstname: "ron",
 	Lastname:  "weasley",
 }
+
+var fakeCalendar = "Not supported for ron.weasley"
