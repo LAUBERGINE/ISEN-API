@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	LoginPage    = "https://ent-toulon.isen.fr/login"
-	MainMenuPage = "https://ent-toulon.isen.fr/faces/MainMenuPage.xhtml"
+	LoginPage            = "https://ent-toulon.isen.fr/login"
+	LoginPageMessageTest = "Bienvenue dans votre espace !"
+	MainMenuPage         = "https://ent-toulon.isen.fr/faces/MainMenuPage.xhtml"
 
 	SelfInfoMenuId aurion.MenuId = "0_0"
 	NotationMenuId aurion.MenuId = "2_1"

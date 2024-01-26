@@ -39,3 +39,8 @@ var fakeNotes = []isen.Notation{
 		Teachers: []string{"Quirinus Quirrell", "Dolores Umbridge", "Remus Lupin"},
 	},
 }
+
+var fakeInfos = isen.SelfInfo{
+	Firstname: "ron",
+	Lastname:  "weasley",
+}

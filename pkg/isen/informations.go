@@ -1,61 +1,72 @@
 package isen
 
 import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+
 	"github.com/AYDEV-FR/ISEN-Api/pkg/aurion"
+	"github.com/PuerkitoBio/goquery"
 )
 
 type SelfInfo struct {
-	Titre     string `json:"date,omitempty"`
-	Firstname string `json:"code,omitempty"`
-	Lastname  string `json:"name,omitempty"`
+	Firstname string `json:"firstname,omitempty"`
+	Lastname  string `json:"lastname,omitempty"`
 }
 
 func GetSelfInfo(token aurion.Token) (SelfInfo, error) {
 	var selfInfo SelfInfo = SelfInfo{}
 
-	_, err := aurion.MenuNavigateTo(token, SelfInfoMenuId, MainMenuPage)
+	client := &http.Client{}
+
+	// Get homepage
+	req, err := http.NewRequest("GET", MainMenuPage, nil)
+	req.Header.Set("Cookie", fmt.Sprintf("JSESSIONID=%v", token))
+
 	if err != nil {
 		return selfInfo, err
 	}
 
-	//fmt.Println(string(currentPage))
+	// Do request homepage
+	resp, err := client.Do(req)
+	if err != nil {
+		return selfInfo, err
+	}
+	defer resp.Body.Close()
 
-	// reader := strings.NewReader(string(currentPage))
-	// doc, err := goquery.NewDocumentFromReader(reader)
-	// if err != nil {
-	// 	return selfInfo, err
-	// }
+	// Test if everithing is ok
+	if resp.StatusCode != 200 {
+		return selfInfo, fmt.Errorf("status code error: %d %s", resp.StatusCode, resp.Status)
+	}
 
-	// fmt.Println(doc.Text())
+	responseBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return selfInfo, err
+	}
 
-	// doc.Find("tr[role='row']").Each(func(i int, s *goquery.Selection) {
-	// 	var note Notation
-	// 	s.Find("td[role='gridcell']").Each(func(i int, s *goquery.Selection) {
-	// 		switch i {
-	// 		case 0:
-	// 			note.Date = s.Text()
-	// 		case 1:
-	// 			note.Code = s.Text()
-	// 		case 2:
-	// 			note.Name = s.Text()
-	// 		case 3:
-	// 			note.Note = s.Text()
-	// 		case 4:
-	// 			note.AbsenceReason = s.Text()
-	// 		case 5:
-	// 			note.Comments = s.Text()
-	// 		case 6:
-	// 			note.Teachers = strings.Split(s.Text(), ",")
-	// 		}
-	// 	})
-	// 	notationsList = append(notationsList, note)
-	// })
+	// If bad token, redirect to login page. Detect it
+	if strings.Contains(string(responseBody), LoginPageMessageTest) {
+		return selfInfo, fmt.Errorf("bad token")
+	}
 
-	// reader := strings.NewReader(htmlTable)
-	// doc, err := goquery.NewDocumentFromReader(reader)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	reader := strings.NewReader(string(responseBody))
+	doc, err := goquery.NewDocumentFromReader(reader)
+	if err != nil {
+		return selfInfo, err
+	}
 
-	return selfInfo, err
+	var responseName string
+	doc.Find("div.menuMonCompte h3").Each(func(i int, s *goquery.Selection) {
+		responseName = s.Text()
+	})
+
+	if responseName != "" && len(strings.Split(responseName, " ")) > 1 {
+		selfInfo.Firstname = strings.ToLower(strings.Split(responseName, " ")[0])
+		selfInfo.Lastname = strings.ToLower(strings.Split(responseName, " ")[1])
+
+		return selfInfo, err
+	}
+
+	return selfInfo, fmt.Errorf("informations not found")
 }

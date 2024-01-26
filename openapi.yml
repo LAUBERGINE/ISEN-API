@@ -1,7 +1,7 @@
-openapi: '3.0.2'
+openapi: "3.0.2"
 info:
   title: ISEN API
-  version: '0.1.1'
+  version: "0.1.1"
 servers:
   - url: https://api.server.test/v1
 paths:
@@ -14,9 +14,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Login'
+              $ref: "#/components/schemas/Login"
       responses:
-        '200':
+        "200":
           description: OK
   # /info:
   #   get:
@@ -36,14 +36,14 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Notation'
+                  $ref: "#/components/schemas/Notation"
               example:
                 - Date: 05/12/2001
                   Code: "21_HOGWART_S3_HERBOLOGY"
@@ -59,7 +59,7 @@ paths:
                     - Quirinus Quirrell
                     - Dolores Umbridge
                     - Remus Lupin
-        '401':
+        "401":
           description: Not authenticated
   /absences:
     summary: Returns a list of all user's absences
@@ -68,14 +68,14 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Absence'
+                  $ref: "#/components/schemas/Absence"
               example:
                 - Date: 05/12/2001
                   Reason: "Absence excusée"
@@ -94,8 +94,27 @@ paths:
                     - Severus Snape
                     - Horace Slughorn
                   Subject: Love filter potion
-                  
-        '401':
+
+        "401":
+          description: Not authenticated
+  /infos:
+    summary: Returns a firstname and lastname
+    description: TODO
+    get:
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/SelfInfo"
+              example:
+                Firstname: "ron"
+                Lastname: "weasley"
+        "401":
           description: Not authenticated
   /agenda:
     summary: Returns a list of all user's courses
@@ -104,9 +123,9 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: Not authenticated
 
 components:
@@ -159,6 +178,6 @@ components:
             type: string
 
   securitySchemes:
-   BearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer

@@ -35,8 +35,16 @@ func MenuNavigateTo(token Token, menu_id MenuId, mainMenuUrl string) ([]byte, er
 		return nil, fmt.Errorf("status code error: %d %s", resp.StatusCode, resp.Status)
 	}
 
+	mainResponseBody, err := ioutil.ReadAll(resp.Body)
+	reader := strings.NewReader(string(mainResponseBody))
+
+	// If bad token, redirect to login page. Detect it
+	if strings.Contains(string(mainResponseBody), "Bienvenue dans votre espace !") {
+		return nil, fmt.Errorf("bad token")
+	}
+
 	// Get viewstate to request destination page
-	viewState, err := getViewState(resp.Body)
+	viewState, err := getViewState(reader)
 	if err != nil {
 		return nil, err
 	}

@@ -42,7 +42,7 @@ func SelfInfoGet(c *gin.Context) {
 	}
 
 	if token == "FAKETOKEN" {
-		c.JSON(http.StatusOK, fakeNotes)
+		c.JSON(http.StatusOK, fakeInfos)
 		return
 	}
 
