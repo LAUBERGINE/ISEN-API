@@ -5,19 +5,15 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cache/persistence"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // Route is the information for every URI.
 type Route struct {
-	// Name is the name of this Route.
-	Name string
-	// Method is the string for the HTTP method. ex) GET, POST etc..
-	Method string
-	// Pattern is the pattern of the URI.
-	Pattern string
-	// HandlerFunc is the handler function of this route.
+	Name        string
+	Method      string
+	Pattern     string
 	HandlerFunc gin.HandlerFunc
 }
 
@@ -27,12 +23,19 @@ type Routes []Route
 func NewRouter() *gin.Engine {
 	store := persistence.NewInMemoryStore(time.Second)
 	router := gin.Default()
-	
-	config := cors.DefaultConfig()
-    	config.AllowAllOrigins = true
-    	config.AllowHeaders = []string{"Token"} //Just for fetch in JS because we have a CORS Problem. I Authorise just the header "Token" nothing more.
-    	router.Use(cors.New(config))
-	
+
+	// Configurer CORS
+	config := cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders:     []string{"Token", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
+	router.Use(cors.New(config))
+
 	for _, route := range routes {
 		switch route.Method {
 		case http.MethodGet:
@@ -63,35 +66,30 @@ var routes = Routes{
 		"/v1/",
 		Index,
 	},
-
 	{
 		"AbsencesGet",
 		http.MethodGet,
 		"/v1/absences",
 		AbsencesGet,
 	},
-
 	{
 		"AgendaGet",
 		http.MethodGet,
 		"/v1/agenda",
 		AgendaGet,
 	},
-
 	{
 		"AgendaEventGet",
 		http.MethodGet,
 		"/v1/agenda/event/:eventId",
 		EventAgendaGet,
 	},
-
 	{
 		"NotationsGet",
 		http.MethodGet,
 		"/v1/notations",
 		NotationsGet,
 	},
-
 	{
 		"TokenPost",
 		http.MethodPost,
@@ -99,3 +97,4 @@ var routes = Routes{
 		TokenPost,
 	},
 }
+
